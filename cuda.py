@@ -43,7 +43,7 @@ def main():
         threshold_val = 20
         blur_kernel_size = (7, 7)
         morph_kernel_size = (7, 7)
-        min_contour_area = 600
+        min_contour_area = 300
     elif max_side >= 1280:
         threshold_val = 15
         blur_kernel_size = (5, 5)
