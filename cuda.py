@@ -55,9 +55,8 @@ def main():
         morph_kernel_size = (5, 5)
         min_contour_area = 50
 
-    # inicjalizacja do zapisu wyniku
-    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-    writer = cv2.VideoWriter(output_path, fourcc, fps_video, (width, height))
+    # rezerwacja pamięci
+    processed_frames_list = []
 
     # inicjalizacja modelu tła za pomocą pierwszej klatki
     ret, first_frame = cap.read()
@@ -121,8 +120,7 @@ def main():
         # aktualizacja klatki - bieżąca będzie poprzednią bezpośrednio w pamięci akcelerowanej
         gray_prev = gray_curr
 
-        # zapis do folderu
-        writer.write(result_frame)
+        processed_frames_list.append(result_frame)
         processed_frames += 1
 
     # koniec pomiaru czasu i czyszczenie zasobów systemowych
@@ -131,7 +129,16 @@ def main():
     fps_achieved = processed_frames / total_time
 
     cap.release()
+
+    print(f"\n[INFO] Obliczenia na GPU zakwalifikowane jako ukonczone. Trwa zapisywanie pliku na dysk...")
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    writer = cv2.VideoWriter(output_path, fourcc, fps_video, (width, height))
+
+    for saved_frame in processed_frames_list:
+        writer.write(saved_frame)
+        
     writer.release()
+    print(f"[INFO] Plik wideo zapisany pomyslnie w: {output_path}")
 
     # podsumowanie metody
     print("\n--- PODSUMOWANIE WARIANTU ROWNOLEGLEGO CUDA / GPU ---")

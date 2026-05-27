@@ -127,16 +127,16 @@ def main():
 
         # aktualizacja klatki - bieżąca będzie poprzednią
         gray_prev = gray_curr.copy()
-        local_frames.append(1)
+        local_frames.append(result_frame)
 
     cap.release()
+
+    # zatrzymanie stopera dla wszystkich procesów jednocześnie (Barrier)
+    comm.Barrier()
 
     # zbieranie wyników
     # wszystkie procesy wysyłają swoje gotowe pakiety klatek do procesu Rank 0
     all_gathered_chunks = comm.gather(len(local_frames), root=0)
-    
-    # zatrzymanie stopera dla wszystkich procesów jednocześnie (Barrier)
-    comm.Barrier()
 
     # prezentacja czystej wydajności algorytmu na procesorze
     if rank == 0:
