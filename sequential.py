@@ -14,7 +14,7 @@ def main():
 
     # pobieranie nazwy pliku
     print("--- POTOK DETEKCJI RUCHU: WARIANT SEKWENCYJNY ---")
-    video_name = input("Podaj nazwę pliku wideo (np. video.avi lub video.mp4): ").strip()
+    video_name = input("Podaj nazwe pliku wideo (np. video.avi lub video.mp4): ").strip()
 
     # ścieżka dla pliku
     video_path = os.path.join(input_dir, video_name)
@@ -27,8 +27,8 @@ def main():
     # otwarcie pliku z walidacją istnienia pliku
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        print(f"\nBłąd: Nie można otworzyć pliku wideo '{video_path}'.")
-        print(f"Upewnij się, że film znajduje się w folderze: {os.path.abspath(input_dir)}")
+        print(f"\nBlad: Nie można otworzyc pliku wideo '{video_path}'.")
+        print(f"Upewnij sie, ze film znajduje się w folderze: {os.path.abspath(input_dir)}")
         return
     
     
@@ -64,7 +64,7 @@ def main():
     # inicjalizacja modelu tła za pomocą pierwszej klatki
     ret, first_frame = cap.read()
     if not ret:
-        print("Błąd: Nie można odczytać klatki inicjalizującej.")
+        print("Blad: Nie mozna odczytać klatki inicjalizujacej.")
         cap.release()
         return
 
@@ -73,7 +73,7 @@ def main():
     gray_prev = cv2.GaussianBlur(gray_prev, blur_kernel_size, 0)
 
     print(f"\n[START] Analiza pliku: {video_path}")
-    print(f"[INFO] Rozdzielczość: {width}x{height}, Klatki: {total_frames}")
+    print(f"[INFO] Rozdzielczosc: {width}x{height}, Klatki: {total_frames}")
     print(f"[INFO] Wynik zostanie zapisany w: {output_path}\nPrzetwarzanie...")
     
     # pomiar czasu
@@ -129,9 +129,9 @@ def main():
 
     # podsumowanie metody
     print("\n--- PODSUMOWANIE WARIANTU SEKWENCYJNEGO ---")
-    print(f"Czas obliczeń:            {total_time:.4f} sekund")
-    print(f"Przetworzone klatki w pętli: {processed_frames}")
-    print(f"Wydajność przetwarzania:    {fps_achieved:.2f} FPS")
+    print(f"Czas obliczen:            {total_time:.4f} sekund")
+    print(f"Przetworzone klatki w petli: {processed_frames}")
+    print(f"Wydajnosc przetwarzania:    {fps_achieved:.2f} FPS")
 
 if __name__ == "__main__":
     main()

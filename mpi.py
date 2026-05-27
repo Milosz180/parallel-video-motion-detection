@@ -20,7 +20,7 @@ def main():
     # tylko proces główy pobiera nazwę od użytkownika (aby każdy z procesów nie próbował przyjmować nazwy)
     if rank == 0:
         print("--- POTOK DETEKCJI RUCHU: WARIANT ROZPROSZONY MPI ---")
-        video_name = input("Podaj nazwę pliku wideo (np. video.mp4): ").strip()
+        video_name = input("Podaj nazwe pliku wideo (np. video.mp4): ").strip()
 
     # broadcast nazwy pliku do wszystkich procesów
     video_name = comm.bcast(video_name, root=0)
@@ -32,7 +32,7 @@ def main():
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
         if rank == 0:
-            print(f"\nBłąd: Nie można otworzyć pliku wideo '{video_path}'.")
+            print(f"\nBlad: Nie mozna otworzyc pliku wideo '{video_path}'.")
         return
 
     # pobieranie parametrów technicznych strumienia wideo
@@ -85,8 +85,8 @@ def main():
     if rank == 0:
         print("--- POTOK DETEKCJI RUCHU: WARIANT ROZPROSZONY MPI ---")
         print(f"[START] Analiza pliku MPI: {video_path}")
-        print(f"[INFO] Liczba procesów MPI: {size}")
-        print(f"[INFO] Rozdzielczość: {width}x{height}, Łącznie klatek: {total_frames}")
+        print(f"[INFO] Liczba procesow MPI: {size}")
+        print(f"[INFO] Rozdzielczosc: {width}x{height}, Lacznie klatek: {total_frames}")
         os.makedirs(output_dir, exist_ok=True)
         start_time = time.time()
 
@@ -147,9 +147,9 @@ def main():
 
         # podsumowanie metody
         print("\n--- PODSUMOWANIE WARIANTU ROZPROSZONEGO MPI ---")
-        print(f"Czas obliczeń potoku:        {total_time:.4f} sekund")
-        print(f"Łącznie przetworzone klatki: {total_processed_frames}")
-        print(f"Wydajność przetwarzania:     {fps_achieved:.2f} FPS\n")
+        print(f"Czas obliczen potoku:        {total_time:.4f} sekund")
+        print(f"Lacznie przetworzone klatki: {total_processed_frames}")
+        print(f"Wydajnosc przetwarzania:     {fps_achieved:.2f} FPS\n")
 
 if __name__ == "__main__":
     main()

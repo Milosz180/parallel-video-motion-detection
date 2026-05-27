@@ -54,8 +54,8 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     # pobieranie nazwy pliku
-    print("--- POTOK DETEKCJI RUCHU: WARIANT RÓWNOLEGŁY OpenMP ---")
-    video_name = input("Podaj nazwę pliku wideo (np. video.mp4): ").strip()
+    print("--- POTOK DETEKCJI RUCHU: WARIANT ROWNOLEGLY OpenMP ---")
+    video_name = input("Podaj nazwe pliku wideo (np. video.mp4): ").strip()
 
     # ścieżka dla pliku
     video_path = os.path.join(input_dir, video_name)
@@ -68,7 +68,7 @@ def main():
     # otwarcie pliku z walidacją istnienia pliku
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
-        print(f"\nBłąd: Nie można otworzyć pliku wideo '{video_path}'.")
+        print(f"\nBlad: Nie mozna otworzyc pliku wideo '{video_path}'.")
         return
     
     # pobieranie parametrów technicznych strumienia wideo
@@ -103,7 +103,7 @@ def main():
     # inicjalizacja modelu tła za pomocą pierwszej klatki
     ret, first_frame = cap.read()
     if not ret:
-        print("Błąd: Nie można odczytać klatki inicjalizującej.")
+        print("Blad: Nie mozna odczytac klatki inicjalizujacej.")
         cap.release()
         return
 
@@ -112,7 +112,7 @@ def main():
     gray_prev = cv2.blur(gray_prev, (blur_k, blur_k))
 
     print(f"\n[START] Analiza pliku OpenMP: {video_path}")
-    print(f"[INFO] Rozdzielczość: {width}x{height}, Klatki: {total_frames}")
+    print(f"[INFO] Rozdzielczosc: {width}x{height}, Klatki: {total_frames}")
     print(f"[INFO] Wynik zostanie zapisany w: {output_path}")
     
     # pomiar czasu
@@ -161,10 +161,10 @@ def main():
     cap.release()
     writer.release()
 
-    print("\n--- PODSUMOWANIE WARIANTU RÓWNOLEGŁEGO OpenMP ---")
-    print(f"Czas obliczeń:            {total_time:.4f} sekund")
-    print(f"Przetworzone klatki w pętli: {processed_frames}")
-    print(f"Wydajność przetwarzania:    {fps_achieved:.2f} FPS")
+    print("\n--- PODSUMOWANIE WARIANTU ROWNOLEGLEGO OpenMP ---")
+    print(f"Czas obliczen:            {total_time:.4f} sekund")
+    print(f"Przetworzone klatki w petli: {processed_frames}")
+    print(f"Wydajnosc przetwarzania:    {fps_achieved:.2f} FPS")
 
 if __name__ == "__main__":
     main()
