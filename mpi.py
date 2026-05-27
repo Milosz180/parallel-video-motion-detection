@@ -138,7 +138,7 @@ def main():
     # zatrzymanie stopera dla wszystkich procesów jednocześnie (Barrier)
     comm.Barrier()
 
-    # prezentacja czystej wydajności algorytmu na procesorze (bez crashowania pętlą zapisu)
+    # prezentacja czystej wydajności algorytmu na procesorze
     if rank == 0:
         end_time = time.time()
         total_time = end_time - start_time
