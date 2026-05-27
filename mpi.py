@@ -151,5 +151,20 @@ def main():
         print(f"Lacznie przetworzone klatki: {total_processed_frames}")
         print(f"Wydajnosc przetwarzania:     {fps_achieved:.2f} FPS\n")
 
+        # zapis pliku
+        name_base, ext = os.path.splitext(video_name)
+        output_path = os.path.join(output_dir, f"{name_base}_mpi{ext}")
+        
+        print(f"[ZAPIS] Rozpoczynanie zapisu filmu do pamieci masowej...")
+        
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        out = cv2.VideoWriter(output_path, fourcc, fps_video, (width, height))
+        
+        for f in local_frames:
+            out.write(f)
+            
+        out.release()
+        print("[ZAPIS] Gotowe! Plik zostal pomyslnie zapisany.")
+
 if __name__ == "__main__":
     main()
