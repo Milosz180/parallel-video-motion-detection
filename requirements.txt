@@ -1,0 +1,4 @@
+numpy
+opencv-python
+mpi4py
+numba

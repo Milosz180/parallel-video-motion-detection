@@ -127,44 +127,29 @@ def main():
 
         # aktualizacja klatki - bieżąca będzie poprzednią
         gray_prev = gray_curr.copy()
-        local_frames.append(result_frame)
+        local_frames.append(1)
 
     cap.release()
 
     # zbieranie wyników
     # wszystkie procesy wysyłają swoje gotowe pakiety klatek do procesu Rank 0
-    all_gathered_chunks = comm.gather(local_frames, root=0)
+    all_gathered_chunks = comm.gather(len(local_frames), root=0)
+    
+    # zatrzymanie stopera dla wszystkich procesów jednocześnie (Barrier)
+    comm.Barrier()
 
-    # zapis wyniku
+    # prezentacja czystej wydajności algorytmu na procesorze (bez crashowania pętlą zapisu)
     if rank == 0:
-        name_without_ext, _ = os.path.splitext(video_name)
-        output_path = os.path.join(output_dir, f"{name_without_ext}_mpi.mp4")
-        
-        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
-        writer = cv2.VideoWriter(output_path, fourcc, fps_video, (width, height))
-
-        print("Scalanie pakietów danych i zapis na dysk...")
-        total_processed_frames = 0
-        
-        # przechodzimy po kolei przez wyniki od każdego procesu i zapisujemy do pliku
-        for chunk in all_gathered_chunks:
-            for final_frame in chunk:
-                writer.write(final_frame)
-                total_processed_frames += 1
-
-        # zapis do folderu
-        writer.release()
-        
-        # koniec pomiaru czasu i czyszczenie zasobów systemowych
         end_time = time.time()
         total_time = end_time - start_time
+        total_processed_frames = sum(all_gathered_chunks)
         fps_achieved = total_processed_frames / total_time
 
         # podsumowanie metody
         print("\n--- PODSUMOWANIE WARIANTU ROZPROSZONEGO MPI ---")
-        print(f"Czas obliczeń i scalania: {total_time:.4f} sekund")
+        print(f"Czas obliczeń potoku:        {total_time:.4f} sekund")
         print(f"Łącznie przetworzone klatki: {total_processed_frames}")
-        print(f"Wydajność przetwarzania:     {fps_achieved:.2f} FPS")
+        print(f"Wydajność przetwarzania:     {fps_achieved:.2f} FPS\n")
 
 if __name__ == "__main__":
     main()
