@@ -165,12 +165,12 @@ for video_name in video_files:
             active_variants.append(f'mpi_{cores}')
 
     # konfiguracja siatki wykresów
-    fig = plt.figure(figsize=(16, 6))
-    gs = fig.add_gridspec(2, 3, height_ratios=[0.88, 0.12])
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     
-    ax1 = fig.add_subplot(gs[0, 0]) 
-    ax2 = fig.add_subplot(gs[0, 1]) 
-    ax3 = fig.add_subplot(gs[0, 2]) 
+    ax1 = axes[0, 0] # lewy górny fps
+    ax2 = axes[0, 1] # prawy górny przyśpieszenie
+    ax3 = axes[1, 0] # lewy dolny: efektywność
+    ax4 = axes[1, 1] # prawy dolny: legenda
     
     # podwykres fps
     fps_values = [video_data[v]['fps'] for v in active_variants]
@@ -189,15 +189,15 @@ for video_name in video_files:
     add_bar_labels(bars1, ax1, metric_type='fps')
 
     # podwykres przyśpieszenie
-    ax2.plot([2, 12], [2, 12], color='#9e9e9e', linestyle='--', alpha=0.6) # Linia idealna Amdahla
+    ax2.plot([2, 12], [2, 12], color='#9e9e9e', linestyle='--', alpha=0.6)
     
     resources_omp = [2, 4, 6, 12]
     omp_speedup = [video_data[f'openmp_{r}']['speedup'] for r in resources_omp]
-    ax2.plot(resources_omp, omp_speedup, marker='o', linewidth=2, color=COLORS['openmp_12'])
-    
+    ax2.plot(resources_omp, omp_speedup, marker='o', linewidth=2.5, color=COLORS['openmp_12'])
+
     resources_mpi = [2, 4, 6, 12] if f'mpi_6' in video_data else [2, 4, 8, 12]
     mpi_speedup = [video_data[f'mpi_{r}']['speedup'] for r in resources_mpi]
-    ax2.plot(resources_mpi, mpi_speedup, marker='s', linewidth=2, color=COLORS['mpi_12'])
+    ax2.plot(resources_mpi, mpi_speedup, marker='s', linewidth=2.5, color=COLORS['mpi_12'])
     
     ax2.set_title('Charakterystyka przyspieszenia algorytmu', fontweight='bold', pad=10)
     ax2.set_xlabel('Liczba wątków / procesów')
@@ -207,15 +207,14 @@ for video_name in video_files:
     ax2.set_ylim(0, max(max(mpi_speedup), max(omp_speedup), 1.5) + 0.3)
     
     for x_p, y_p in zip(resources_omp, omp_speedup):
-        ax2.text(x_p, y_p + 0.04, f'{y_p:.2f}x', ha='center', va='bottom', fontsize=8, color='#33691e', fontweight='bold')
+        ax2.text(x_p, y_p + 0.04, f'{y_p:.2f}x', ha='center', va='bottom', fontsize=8.5, color='#33691e', fontweight='bold')
     for x_p, y_p in zip(resources_mpi, mpi_speedup):
-        ax2.text(x_p, y_p + 0.04, f'{y_p:.2f}x', ha='center', va='bottom', fontsize=8, color='#0d47a1', fontweight='bold')
+        ax2.text(x_p, y_p + 0.04, f'{y_p:.2f}x', ha='center', va='bottom', fontsize=8.5, color='#0d47a1', fontweight='bold')
 
     # podwykres efektywność
     efficiency_values = [video_data[v]['efficiency'] for v in active_variants]
-    efficiency_colors = [COLORS[v] for v in active_variants]
     
-    bars3 = ax3.bar(x_labels, efficiency_values, color=efficiency_colors, edgecolor='black', alpha=0.85, width=0.55)
+    bars3 = ax3.bar(x_labels, efficiency_values, color=bar_colors, edgecolor='black', alpha=0.85, width=0.55)
     ax3.set_title('Efektywność wykorzystania zasobów', fontweight='bold', pad=10)
     ax3.set_ylabel('Współczynnik efektywności $E_p$')
     ax3.set_xlabel('Konfiguracja środowiska')
@@ -223,18 +222,16 @@ for video_name in video_files:
     add_bar_labels(bars3, ax3, metric_type='efficiency')
 
     # legenda
+    ax4.axis('off')
     legend_handles = [plt.Rectangle((0,0),1,1, color=COLORS[v], edgecolor='black') for v in active_variants]
     legend_labels = [VARIANT_NAMES[v] for v in active_variants]
-    
-    ax_leg = fig.add_subplot(gs[1, :])
-    ax_leg.axis('off')
-    ax_leg.legend(legend_handles, legend_labels, loc='center', bbox_to_anchor=(0.5, 0.4),
-                  ncol=len(active_variants), frameon=True, facecolor='white', edgecolor='none')
+    ax4.legend(legend_handles, legend_labels, loc='center', frameon=True, 
+               facecolor='#f8f9fa', edgecolor='#cfd8dc', borderpad=1.5, fontsize=10.5)
 
-    fig.suptitle(f'Analiza porównawcza OpenMP vs MPI dla pliku: {video_name}', fontweight='bold', fontsize=14, y=0.98)
-    
-    plt.tight_layout(rect=[0, 0, 1, 0.98])
-    plt.savefig(os.path.join(output_dir, f'MPI_OpenMP_{video_name.replace(".mp4", "")}.png'), dpi=300)
+    fig.suptitle(f'Analiza porównawcza OpenMP vs MPI dla pliku: {video_name}', fontweight='bold', y=0.96)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
+    plt.savefig(os.path.join(output_dir, f'MPI_OpenMP_results_{video_name.replace(".mp4", "")}.png'), dpi=300)
     plt.close()
 
 
@@ -252,12 +249,12 @@ for video_name in video_files:
     final_colors = [COLORS[v] for v in final_variants]
     final_labels = [X_AXIS_LABELS[v] for v in final_variants]
     
-    fig = plt.figure(figsize=(16, 6))
-    gs = fig.add_gridspec(2, 3, height_ratios=[0.88, 0.12])
+    fig, axes = plt.subplots(2, 2, figsize=(12, 10))
     
-    ax1 = fig.add_subplot(gs[0, 0]) 
-    ax2 = fig.add_subplot(gs[0, 1]) 
-    ax3 = fig.add_subplot(gs[0, 2]) 
+    ax1 = axes[0, 0] # lewy górny: czas
+    ax2 = axes[0, 1] # prawy górny: fps
+    ax3 = axes[1, 0] # lewy dolny: przyśpieszenie
+    ax4 = axes[1, 1] # prawy dolny: legenda
     
     # podwykres 1 czas
     bars1 = ax1.bar(final_labels, time_values, color=final_colors, edgecolor='black', alpha=0.85, width=0.5)
@@ -275,8 +272,8 @@ for video_name in video_files:
         if h == 0.0: continue
         label_text = f'{h:.2f}s' if h >= 1.0 else f'{h:.4f}s'
         ax1.annotate(label_text, xy=(bar.get_x() + bar.get_width() / 2, h),
-                    xytext=(0, 2), textcoords="offset points", ha='center', va='bottom', fontweight='bold', fontsize=8)
-
+                    xytext=(0, 2), textcoords="offset points", ha='center', va='bottom', fontweight='bold', fontsize=8.5)
+        
     # podwykres 2 fps
     bars2 = ax2.bar(final_labels, fps_values, color=final_colors, edgecolor='black', alpha=0.85, width=0.5)
     ax2.set_title('Wydajność przetwarzania danych', fontweight='bold', pad=10)
@@ -294,22 +291,20 @@ for video_name in video_files:
     ax3.set_title('Uzyskane przyspieszenie względne ($S_p$)', fontweight='bold', pad=10)
     ax3.set_ylabel('Współczynnik przyspieszenia')
     ax3.set_xlabel('Strategia optymalizacji')
-    ax3.axhline(1.0, color='#757575', linestyle='--', alpha=0.5) # Próg baseline
+    ax3.axhline(1.0, color='#757575', linestyle='--', alpha=0.5)
     ax3.set_ylim(0, max(speedup_values) + 0.3)
     add_bar_labels(bars3, ax3, metric_type='speedup')
 
     # legenda
+    ax4.axis('off')
     legend_handles = [plt.Rectangle((0,0),1,1, color=COLORS[v], edgecolor='black') for v in final_variants]
     legend_labels = [VARIANT_NAMES[v] for v in final_variants]
-    
-    ax_leg = fig.add_subplot(gs[1, :])
-    ax_leg.axis('off')
-    ax_leg.legend(legend_handles, legend_labels, loc='center', bbox_to_anchor=(0.5, 0.4),
-                  ncol=len(final_variants), frameon=True, facecolor='white', edgecolor='none')
+    ax4.legend(legend_handles, legend_labels, loc='center', frameon=True, 
+               facecolor='#f8f9fa', edgecolor='#cfd8dc', borderpad=1.5, fontsize=10.5)
 
-    fig.suptitle(f'Zbiorcze zestawienie ostateczne dla pliku wideo: {video_name}', fontweight='bold', fontsize=14, y=0.98)
-    
-    plt.tight_layout(rect=[0, 0, 1, 0.98])
+    fig.suptitle(f'Zbiorcze zestawienie ostateczne dla pliku wideo: {video_name}', fontweight='bold', y=0.96)
+
+    plt.tight_layout(rect=[0, 0, 1, 0.95])
     plt.savefig(os.path.join(output_dir, f'final_results_{video_name.replace(".mp4", "")}.png'), dpi=300)
     plt.close()
 
